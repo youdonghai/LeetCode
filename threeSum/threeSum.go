@@ -4,7 +4,6 @@ import "sort"
 import "strconv"
 
 func ThreeSum(nums []int) [][]int {
-	// not red-black tree in golang, so ...
 	r := [][]int{}
 	two_sum_map := make(map[int][]int)
 	n := len(nums)
@@ -78,6 +77,76 @@ func ThreeSum(nums []int) [][]int {
 				if !skip {
 					r = append(r, l)
 				}
+			}
+		}
+	}
+	return r
+}
+
+func ThreeSum2(nums []int) [][]int {
+	rmap := make(map[int]map[int]map[int]bool)
+	for i := 0; i < len(nums); i++ {
+		for j := i + 1; j < len(nums); j++ {
+			for k := j + 1; k < len(nums); k++ {
+				v1 := nums[i]
+				v2 := nums[j]
+				v3 := nums[k]
+				if v1+v2+v3 != 0 {
+					continue
+				}
+				if v1 > v2 {
+					tmp := v1
+					v1 = v2
+					v2 = tmp
+				}
+				if v1 > v3 {
+					tmp := v1
+					v1 = v3
+					v3 = tmp
+				}
+				if v2 > v3 {
+					tmp := v2
+					v2 = v3
+					v3 = tmp
+				}
+				rmm, ok1 := rmap[v1]
+				if !ok1 {
+					rmm = make(map[int]map[int]bool)
+					rmap[v1] = rmm
+				}
+				rmmm, ok2 := rmm[v2]
+				if !ok2 {
+					rmmm = make(map[int]bool)
+					rmm[v2] = rmmm
+				}
+				_, ok3 := rmmm[v3]
+				if !ok3 {
+					rmmm[v3] = true
+				}
+			}
+		}
+	}
+	r := [][]int{}
+
+	key1 := []int{}
+	for k := range rmap {
+		key1 = append(key1, k)
+	}
+	sort.Ints(key1)
+	for _, k1 := range key1 {
+		key2 := []int{}
+		for k := range rmap[k1] {
+			key2 = append(key2, k)
+		}
+		sort.Ints(key2)
+		for _, k2 := range key2 {
+			key3 := []int{}
+			for k := range rmap[k1][k2] {
+				key3 = append(key3, k)
+			}
+			sort.Ints(key3)
+			for _, k3 := range key3 {
+				r = append(r, []int{k1, k2, k3})
 			}
 		}
 	}
